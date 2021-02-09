@@ -198,4 +198,4 @@ results5 = compute_metrics(preds5, helper, pred_config5)
 print('Results for K=5: \n' + str(results5))
 
 results10 = compute_metrics(preds10, helper, pred_config10)
-print('Results for K=10: \n' + str(results5))
+print('Results for K=10: \n' + str(results10))
