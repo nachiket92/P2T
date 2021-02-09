@@ -1,0 +1,79 @@
+# Reward model parameters
+args_r:
+  backbone: 'resnet34'
+  grid_cell_size: [2, 2]
+  scene_feat_size: 64
+  agg_sizes: [32, 32]
+
+# Trajectory generator parameters
+args_t:
+  coord_emb_size: 16
+  use_scene: true
+  scene_emb_size: 32
+  scene_feat_size: 64
+  use_agents: false
+  agent_emb_size: 16
+  agent_feat_size: 3
+  use_motion_states: false
+  traj_enc_size: 32
+  waypt_enc_size: 32
+  att_size: 32
+  op_length: 25
+
+# MDP parameters
+args_mdp:
+  grid_dim: [25, 25]
+  horizon: 40
+  gamma: 0.99
+  actions: 4
+  initial_state: [12, 12]
+
+# Dataset and dataloader parameters
+ds: 'sdd'
+dataroot: "data/sdd"
+train: "SDDtrain.mat"
+val: "SDDval.mat"
+test: "SDDtest.mat"
+img_size: 200
+t_h: 2.8
+t_f: 10
+grid_extent: [-500, 500, -500, 500]
+num_workers: 8
+
+# Optimizer and training parameters for reward model
+opt_r:
+  batch_size: 32
+  lr: 0.0001
+  num_epochs: 8
+  steps_to_log_train_loss: 100
+  save_checkpoints: true
+  checkpt_dir: 'checkpts/sdd/reward/weights'
+  log_dir: 'checkpts/sdd/reward/log'
+  load_checkpt: false
+  checkpt_path: ''
+
+# Optimizer and training parameters for pretraining trajectory generator
+opt_t:
+  batch_size: 32
+  lr: 0.001
+  num_epochs: 75
+  steps_to_log_train_loss: 100
+  save_checkpoints: true
+  checkpt_dir: 'checkpts/sdd/traj_pt/weights'
+  log_dir: 'checkpts/sdd/traj_pt/log'
+  load_checkpt: false
+  checkpt_path: ''
+
+# Optimizer and training parameters for finetuning trajectory generator
+opt_finetune:
+  batch_size: 32
+  lr: 0.0001
+  num_epochs: 100
+  steps_to_log_train_loss: 100
+  save_checkpoints: true
+  checkpt_dir: 'checkpts/sdd/traj_ft/weights'
+  log_dir: 'checkpts/sdd/traj_ft/log'
+  load_checkpt: false
+  checkpt_path: ''
+  num_samples: 200
+  num_clusters: 20
