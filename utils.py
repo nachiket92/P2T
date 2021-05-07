@@ -102,7 +102,31 @@ def min_fde_k(y_pred, y_gt, masks, all_timestamps=False):
         return loss
 
 
-def offroad_rate(y_pred, img_lbls, ref_pos, ds_ids, y_gt, all_timestamps=False):
+def sdd_local2global(traj, ref_pos):
+    """
+    Transforms trajectory to global coordinates for SDD
+    """
+
+    # Flip
+    traj = traj[:, [1, 0]]
+    ref_pos = ref_pos[[1, 0, 2]]
+
+    # Rotate
+    theta = ref_pos[2]
+    r_mat = torch.zeros(2, 2)
+    r_mat[0, 0] = np.cos(np.pi * theta / 180)
+    r_mat[0, 1] = np.sin(np.pi * theta / 180)
+    r_mat[1, 0] = -np.sin(np.pi * theta / 180)
+    r_mat[1, 1] = np.cos(np.pi * theta / 180)
+    traj = torch.mm(r_mat, traj.t()).t()
+
+    # Translate
+    traj = traj + ref_pos[:2]
+
+    return traj
+
+
+def offroad_rate(y_pred, img_lbls, ref_pos, ds_ids, y_gt, masks, all_timestamps=False):
     """
     Computes offroad rate for Stanford drone dataset
 
@@ -115,29 +139,47 @@ def offroad_rate(y_pred, img_lbls, ref_pos, ds_ids, y_gt, all_timestamps=False):
     Output
     offroad rate for batch
     """
+
+    # Transform to global co-ordinates
+    y_gt_global = torch.zeros_like(y_gt)
+    y_pred_global = torch.zeros_like(y_pred)
+    for k in range(y_pred.shape[0]):
+
+        # Transform ground_truth
+        y_gt_global[k] = sdd_local2global(y_gt[k].cpu(), ref_pos[k].cpu())
+
+        # Transform predictions
+        for n in range(y_pred.shape[1]):
+            y_pred_global[k, n] = sdd_local2global(y_pred[k, n].cpu(), ref_pos[k].cpu())
+
+    # Compute offroad rate
     num_path = torch.zeros(y_pred.shape[2])
     counts = torch.zeros(y_pred.shape[2])
     for k in range(y_pred.shape[0]):
         lbl_img = img_lbls[0][ds_ids[k] - 1]
+
         for n in range(y_pred.shape[1]):
             for m in range(y_pred.shape[2]):
-                col = int(y_pred[k, n, m, 0].detach() + ref_pos[k, 0].detach())
-                row = int(y_pred[k, n, m, 1].detach() + ref_pos[k, 1].detach())
-                col_gt = int(y_gt[k, m, 0].detach() + ref_pos[k, 0].detach())
-                row_gt = int(y_gt[k, m, 1].detach() + ref_pos[k, 1].detach())
-                # If ground truth future location is on a path and within the image boundaries:
-                if row_gt < lbl_img.shape[0] and col_gt < lbl_img.shape[1]:
-                    if lbl_img[row_gt, col_gt]:
-                        counts[m] += 1
-                        # If predicted location is on a path and within image boundaries:
-                        if row < lbl_img.shape[0] and col < lbl_img.shape[1]:
-                            if lbl_img[row, col]:
-                                num_path[m] += 1
+
+                row = int(y_pred_global[k, n, m, 1].item())
+                col = int(y_pred_global[k, n, m, 0].item())
+                row_gt = int(y_gt_global[k, m, 1].item())
+                col_gt = int(y_gt_global[k, m, 0].item())
+
+                # If mask is 0:
+                if masks[k, n] == 0:
+                    # If ground truth future location is on a path and within the image boundaries:
+                    if row_gt < lbl_img.shape[0] and col_gt < lbl_img.shape[1]:
+                        if lbl_img[row_gt, col_gt]:
+                            counts[m] += 1
+                            # If predicted location is on a path and within image boundaries:
+                            if row < lbl_img.shape[0] and col < lbl_img.shape[1]:
+                                if lbl_img[row, col]:
+                                    num_path[m] += 1
     if all_timestamps:
         return torch.ones_like(num_path) - num_path / counts
     else:
         return torch.tensor(1) - torch.sum(num_path) / torch.sum(counts)
-
 
 def tb_reward_plots(img_vis, r, svf, svf_e):
     """
