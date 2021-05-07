@@ -119,7 +119,7 @@ class SDD(Dataset):
         fut = np.matmul(r_mat, fut.transpose()).transpose()
         fut = fut[:, [1, 0]]
         return fut
-
+    
     def get_history(self, t_id, t, ds_id, theta):
         """
         helper function to get track history:
@@ -137,6 +137,7 @@ class SDD(Dataset):
         hist = np.matmul(r_mat, hist.transpose()).transpose()
         hist = hist[:, [1, 0]]
         ref_pos = ref_pos[[1, 0]]
+        ref_pos = np.append(ref_pos, -theta)
         return hist, ref_pos
 
     def get_img(self, t_id, t, ds_id, theta):
