@@ -40,7 +40,7 @@ ts_set = DS(config['dataroot'],
 
 # Initialize data loader:
 ts_dl = DataLoader(ts_set,
-                   batch_size=16,
+                   batch_size=4,
                    shuffle=True,
                    num_workers=config['num_workers'])
 
@@ -64,7 +64,7 @@ initial_state = config['args_mdp']['initial_state']
 
 
 # Sampling parameters for policy roll-outs:
-num_samples = 400
+num_samples = 1000
 
 
 # Prediction helper and configs:
