@@ -42,13 +42,13 @@ ts_dl = DataLoader(ts_set,
 
 # Initialize Models:
 net_r = RewardModel(config['args_r']).float().to(device)
-net_r.load_state_dict(torch.load(config['opt_r']['checkpt_dir'] + '/' + '6.tar')['model_state_dict'])
+net_r.load_state_dict(torch.load(config['opt_r']['checkpt_dir'] + '/' + 'best.tar')['model_state_dict'])
 for param in net_r.parameters():
     param.requires_grad = False
 net_r.eval()
 
 net_t = TrajGenerator(config['args_t']).float().to(device)
-net_t.load_state_dict(torch.load(config['opt_finetune']['checkpt_dir'] + '/' + '70.tar')['model_state_dict'])
+net_t.load_state_dict(torch.load(config['opt_finetune']['checkpt_dir'] + '/' + 'best.tar')['model_state_dict'])
 net_t.eval()
 
 mdp = rl.MDP(config['args_mdp']['grid_dim'],
@@ -59,7 +59,7 @@ initial_state = config['args_mdp']['initial_state']
 
 
 # Sampling parameters for policy roll-outs:
-num_samples = 400
+num_samples = 1000
 K = [5, 20]
 
 
