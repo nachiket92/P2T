@@ -36,7 +36,7 @@ def km_cluster(data, num_clusters):
     """
     Performs K-means clustering on a set of sampled trajectories
     """
-    clustering = KMeans(num_clusters).fit(data)
+    clustering = KMeans(num_clusters, n_init=1, max_iter=100).fit(data)
     return clustering.labels_
 
 
