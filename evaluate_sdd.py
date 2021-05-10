@@ -9,6 +9,7 @@ import utils as u
 import numpy as np
 from datasets.sdd import SDD as DS
 import multiprocessing as mp
+import scipy.io as scp
 
 
 # Read config file
@@ -39,6 +40,9 @@ ts_dl = DataLoader(ts_set,
                    shuffle=True,
                    num_workers=config['num_workers'])
 
+or_lbls = scp.loadmat(config['dataroot'] + '/' + config['or_labels'])
+or_lbls = or_lbls['img_lbls']
+
 
 # Initialize Models:
 net_r = RewardModel(config['args_r']).float().to(device)
@@ -66,6 +70,7 @@ K = [5, 20]
 # Variables to track metrics
 agg_min_ade_k = torch.zeros(len(K))
 agg_min_fde_k = torch.zeros(len(K))
+agg_or_k = torch.zeros(len(K))
 
 
 counts = 0
@@ -130,14 +135,18 @@ with mp.Pool(8) as process_pool:
             traj_clustered = traj_clustered.to(device)
             agg_min_ade_k[n] += u.min_ade_k(traj_clustered[:, :, 0:12, :], fut, masks).item() * fut.shape[0]
             agg_min_fde_k[n] += u.min_fde_k(traj_clustered[:, :, 0:12, :], fut, masks).item() * fut.shape[0]
+            agg_or_k[n] += u.offroad_rate(traj_clustered[:, :, 0:12, :], or_lbls, ref_pos, ds_ids, fut, masks) \
+                           * fut.shape[0]
 
         counts += fut.shape[0]
-
+        print(i)
 
 print('Results for K=5: \n' +
       'MinADEK: ' + str(agg_min_ade_k[0].item()/counts) +
-      ' MinFDEK: ' + str(agg_min_fde_k[0].item()/counts))
+      ' MinFDEK: ' + str(agg_min_fde_k[0].item()/counts) +
+      'Offroad rate: ' + str(agg_or_k[0].item()/counts))
 
 print('Results for K=10: \n' +
       'MinADEK: ' + str(agg_min_ade_k[1].item()/counts) +
-      ' MinFDEK: ' + str(agg_min_fde_k[1].item()/counts))
+      ' MinFDEK: ' + str(agg_min_fde_k[1].item()/counts) +
+      'Offroad rate: ' + str(agg_or_k[1].item()/counts))

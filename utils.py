@@ -3,6 +3,7 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 from sklearn.utils.testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
+import numpy as np
 
 
 def get_plan_feats(plans, scene_tensor, agent_tensor):
@@ -180,6 +181,7 @@ def offroad_rate(y_pred, img_lbls, ref_pos, ds_ids, y_gt, masks, all_timestamps=
         return torch.ones_like(num_path) - num_path / counts
     else:
         return torch.tensor(1) - torch.sum(num_path) / torch.sum(counts)
+
 
 def tb_reward_plots(img_vis, r, svf, svf_e):
     """

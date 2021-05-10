@@ -56,7 +56,7 @@ opt_r:
 opt_t:
   batch_size: 32
   lr: 0.001
-  num_epochs: 25
+  num_epochs: 100
   steps_to_log_train_loss: 100
   save_checkpoints: true
   checkpt_dir: 'checkpts/ns/traj_pt/weights'
@@ -68,7 +68,7 @@ opt_t:
 opt_finetune:
   batch_size: 32
   lr: 0.0001
-  num_epochs: 200
+  num_epochs: 400
   steps_to_log_train_loss: 100
   save_checkpoints: true
   checkpt_dir: 'checkpts/ns/traj_ft/weights'

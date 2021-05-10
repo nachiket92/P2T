@@ -34,6 +34,7 @@ dataroot: "data/sdd"
 train: "SDDtrain.mat"
 val: "SDDval.mat"
 test: "SDDtest.mat"
+or_labels: "img_lbls.mat"
 img_size: 200
 t_h: 2.8
 t_f: 10
