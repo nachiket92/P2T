@@ -162,7 +162,6 @@ for epoch in range(start_epoch, start_epoch + num_epochs):
         # Tensorboard train metrics
         writer.add_scalar('train/SVF diff (goals)', torch.mean(torch.abs(svf_diff[:, 1, :, :])).item(), iters)
         writer.add_scalar('train/SVF diff (paths)', torch.mean(torch.abs(svf_diff[:, 0, :, :])).item(), iters)
-        writer.close()
 
         # Increment global iteration counter for tensorboard
         iters += 1
@@ -185,7 +184,6 @@ for epoch in range(start_epoch, start_epoch + num_epochs):
                                              svf[0:8].detach().cpu(),
                                              svf_e[0:8].detach().cpu())
             writer.add_figure('train/SVFs_and_rewards', tb_fig_train, iters)
-            writer.close()
 
             # Reset variables to track training performance
             tr_svf_diff_path = 0
@@ -236,7 +234,6 @@ for epoch in range(start_epoch, start_epoch + num_epochs):
                                                svf[0:8].detach().cpu(),
                                                svf_e[0:8].detach().cpu())
                 writer.add_figure('val/SVFs_and_rewards', tb_fig_val, iters)
-                writer.close()
 
     # Print validation losses
     print('Val SVF diff (paths) :', format(val_svf_diff_path / val_batch_count, '0.5f'),
@@ -246,7 +243,7 @@ for epoch in range(start_epoch, start_epoch + num_epochs):
     # Tensorboard val metrics
     writer.add_scalar('val/SVF_diff_goals', val_svf_diff_goal / val_batch_count, iters)
     writer.add_scalar('val/SVF_diff_paths', val_svf_diff_path / val_batch_count, iters)
-    writer.close()
+    writer.flush()
 
     # Save checkpoint
     if config['opt_r']['save_checkpoints']:
@@ -270,3 +267,7 @@ for epoch in range(start_epoch, start_epoch + num_epochs):
             'loss': val_loss,
             'min_val_loss': min_val_loss
         }, model_path)
+
+
+# Close tensorboard writer
+writer.close()

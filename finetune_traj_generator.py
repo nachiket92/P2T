@@ -209,7 +209,6 @@ with mp.Pool(8) as process_pool:
 
             # Tensorboard train metrics
             writer.add_scalar('train/loss', l_batch.item(), iters)
-            writer.close()
 
             # Increment global iteration counter for tensorboard
             iters += 1
@@ -234,7 +233,6 @@ with mp.Pool(8) as process_pool:
                                                   counts_clustered[0:8],
                                                   extent=config['grid_extent'])
                 writer.add_figure('train/trajectories', tb_fig_train, iters)
-                writer.close()
 
                 # Reset variables to track training performance
                 tr_loss = 0
@@ -322,7 +320,6 @@ with mp.Pool(8) as process_pool:
                                                     counts_clustered[0:8],
                                                     extent=config['grid_extent'])
                     writer.add_figure('val/trajectories', tb_fig_val, iters)
-                    writer.close()
 
         # Print validation losses
         print('Val loss :', format(agg_val_loss / val_batch_count, '0.4f'))
@@ -330,7 +327,7 @@ with mp.Pool(8) as process_pool:
 
         # Tensorboard validation metrics
         writer.add_scalar('val/loss', val_loss, iters)
-        writer.close()
+        writer.flush()
 
         # Save checkpoint
         if config['opt_finetune']['save_checkpoints']:
@@ -354,3 +351,7 @@ with mp.Pool(8) as process_pool:
                 'loss': val_loss,
                 'min_val_loss': min_val_loss
             }, model_path)
+
+
+# Close tensorboard writer
+writer.close()
