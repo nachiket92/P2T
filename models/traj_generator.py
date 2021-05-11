@@ -105,7 +105,7 @@ class TrajGenerator(nn.Module):
         emb = self.leaky_relu(emb_cat)
 
         emb_sorted = emb[:, argsort, :]
-        emb_packed = nn.utils.rnn.pack_padded_sequence(emb_sorted, waypt_lengths_sorted, batch_first=False)
+        emb_packed = nn.utils.rnn.pack_padded_sequence(emb_sorted, waypt_lengths_sorted.cpu(), batch_first=False)
         h_waypt_packed, _ = self.waypt_enc_gru(emb_packed)
         h_waypt_unpacked, _ = nn.utils.rnn.pad_packed_sequence(h_waypt_packed)
         h_waypt = h_waypt_unpacked[:, argargsort, :]

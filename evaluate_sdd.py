@@ -139,7 +139,7 @@ with mp.Pool(8) as process_pool:
                            * fut.shape[0]
 
         counts += fut.shape[0]
-        print(i)
+        print("Batch " + str(i) + " of " + str(len(ts_dl)))
 
 print('Results for K=5: \n' +
       'MinADEK: ' + str(agg_min_ade_k[0].item()/counts) +

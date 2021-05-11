@@ -193,6 +193,7 @@ with mp.Pool(8) as process_pool:
             preds10.append(Prediction(instance=instance_token[n], sample=sample_token[n], prediction=pred_global,
                                       probabilities=counts).serialize())
 
+        print("Batch " + str(i) + " of " + str(len(ts_dl)))
 
 results5 = compute_metrics(preds5, helper, pred_config5)
 print('Results for K=5: \n' + str(results5))
