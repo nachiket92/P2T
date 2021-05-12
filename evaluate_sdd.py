@@ -146,7 +146,7 @@ print('Results for K=5: \n' +
       ' MinFDEK: ' + str(agg_min_fde_k[0].item()/counts) +
       'Offroad rate: ' + str(agg_or_k[0].item()/counts))
 
-print('Results for K=10: \n' +
+print('Results for K=20: \n' +
       'MinADEK: ' + str(agg_min_ade_k[1].item()/counts) +
       ' MinFDEK: ' + str(agg_min_fde_k[1].item()/counts) +
       'Offroad rate: ' + str(agg_or_k[1].item()/counts))
