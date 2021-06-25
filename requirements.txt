@@ -95,7 +95,6 @@ tornado==6.1
 tqdm==4.60.0
 traitlets==5.0.5
 typing-extensions==3.10.0.0
-urllib3==1.26.4
 wcwidth==0.2.5
 webencodings==0.5.1
 Werkzeug==2.0.0
